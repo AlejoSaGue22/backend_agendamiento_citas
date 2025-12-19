@@ -10,11 +10,11 @@ export const createService = async (req: AuthRequest, res: Response) => {
         if (!id) return res.status(400).json({ message: 'ID de usuario inválido.' });
         
         const data = req.body;
-        const createService = await serviceService.createService(data, id)
+        const createService = await serviceService.createService(data, id);
         res.json({
             message: 'Servicio creado exitosamente',
             service: createService
-        })
+        });
         
     } catch (error: any) {
         res.status(500).json({ message: error.message });

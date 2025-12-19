@@ -4,7 +4,7 @@ import { Clients, ClientsDto } from "../interfaces/clients.interfaces";
 export class ClientsRepository {
 
     async findAll(): Promise<Clients[]>{
-        const sql = `SELECT * FROM clients`;
+        const sql = `SELECT concat(c.name_client, ' ', c.last_name) as full_name, * FROM clients c`;
         const result = await query(sql);
         return result.rows;
     }
@@ -17,16 +17,17 @@ export class ClientsRepository {
 
     async create(data: ClientsDto, userId: number): Promise<Clients>{
         const sql = `
-            INSERT INTO clients (full_name, email, phone, notes, created_by, created_at)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO clients (name_client, last_name, email, phone, notes, created_by, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
         `;
         const date = new Date().toLocaleDateString();
         const values = [
-            data.full_name,
+            data.nombre,
+            data.apellido,
             data.email,
-            data.phone,
-            data.notes,
+            data.telefono,
+            data.notas,
             userId || null,
             date
         ]
@@ -36,16 +37,17 @@ export class ClientsRepository {
 
     async update(id: number, data: ClientsDto): Promise<Clients>{
         const sql = `
-            UPDATE clients SET full_name = $1, email = $2, phone = $3, notes = $4
-            WHERE id = $5
+            UPDATE clients SET name_client = $1, email = $2, phone = $3, notes = $4, last_name = $5
+            WHERE id = $6
             RETURNING *
         `;
 
         const values = [
-            data.full_name,
+            data.nombre, 
             data.email,
-            data.phone,
-            data.notes,
+            data.telefono,
+            data.notas,
+            data.apellido,
             id
         ]
         const result = await query(sql, values);

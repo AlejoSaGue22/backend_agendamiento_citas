@@ -25,3 +25,21 @@ export interface UserPayload {
     role: Role;
     email: string;
 }
+
+export interface StaffAvailability {
+    day_of_week: number;
+    start_time: string; // "08:00"
+    end_time: string;   // "17:00"
+}
+
+export interface CreateUserDTO {
+    email: string;
+    password?: string;
+    names: string;
+    last_name: string;
+    full_name: string;
+    role_id: number;
+        // Campos específicos para Staff
+    services?: number[]; // IDs de los servicios
+    availability?: StaffAvailability[];
+}

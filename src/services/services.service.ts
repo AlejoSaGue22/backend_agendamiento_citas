@@ -9,9 +9,11 @@ export class servicesService {
         if (!data.name || data.name.trim() === '') {
             throw new Error('El nombre es obligatorio.');
         }
+        
         if (!data.duration_minutes) {
             throw new Error('La duracion de tiempo es obligatorio.');
         }
+
         if (!data.price) {
             throw new Error('El precio es obligatorio.');
         }

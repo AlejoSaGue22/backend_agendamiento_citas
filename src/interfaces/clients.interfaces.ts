@@ -1,6 +1,7 @@
 export interface Clients {
     id: string;
-    full_name: string;
+    name_client: string;
+    last_name: string;
     email: string;
     phone: string;
     notes: string;
@@ -9,8 +10,9 @@ export interface Clients {
 }
 
 export interface ClientsDto {
-    full_name: string;
+    nombre: string;
+    apellido: string;
     email: string;
-    phone: string;
-    notes: string;
+    telefono: string;
+    notas: string;
 }
