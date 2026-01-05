@@ -19,8 +19,17 @@ export class AuthService {
 
         const passwordHash = await bcrypt.hash(password, this.HASH_SALT_ROUNDS);
         
-        // Todos los usuarios registrados por el flujo público son clientes (Role.Client = 3)
-        const newUser = await userRepo.create(email, passwordHash, fullName, Role.Staff);
+        // Todos los usuarios registrados por el flujo público son staff (Role.Staff = 2)
+        const newUser = await userRepo.createAdmin({
+            email,
+            password: passwordHash,
+            name_user: '',
+            last_name: '',
+            role_id: Role.Staff,
+            type_document: '',
+            number_document: '',
+            phone: ''
+        });
         
         return newUser;
     }
@@ -37,7 +46,7 @@ export class AuthService {
         //     throw new Error('Credenciales inválidas.');
         // }
         if(user.contraseña !== credentials.password) throw new Error('Contraseña incorrecta');
-        
+        console.log("Usuario autenticado: ", user);
         // 1. Generar payload y token
         const payload: UserPayload = { id: user.id, role: user.role, email: user.email };
         const token = jwt.sign(payload, envs.JWT_SECRET, { expiresIn: '8h' });
@@ -50,8 +59,8 @@ export class AuthService {
     }
 
     async checkAuthStatus(user: User): Promise<{userToken: User, token: string }> {
-        console.log("User: ",user);
-        const token = jwt.sign({ id: user.id, rol: user.role, email: user.email }, envs.JWT_SECRET, { expiresIn: '8h' });
+        console.log("CheckStatus",user)
+        const token = jwt.sign({ id: user.id, rol: user.role_id, email: user.email }, envs.JWT_SECRET, { expiresIn: '8h' });
       
         return {
             userToken: user,

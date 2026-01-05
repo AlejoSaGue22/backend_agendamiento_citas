@@ -1,16 +1,22 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/auth.middleware";
-import { getUsers } from "../controllers/user.controller";
+import { createUsers, deleteUser, findDocumentTypes, findRoles, getUserByID, getUsers } from "../controllers/user.controller";
 
 const UsersRoutes = Router();
 
 UsersRoutes.get('/', getUsers);
 
-// UsersRoutes.post('/', createuse);
+UsersRoutes.get('/:id', getUserByID);
 
-// UsersRoutes.patch('/:id', updateService);
+UsersRoutes.post('/', authenticate, createUsers);
 
-// UsersRoutes.delete('/:id', deleteService);
+// UsersRoutes.patch('/:id', authenticate, );
+
+UsersRoutes.delete('/:id', authenticate, deleteUser);
+
+UsersRoutes.get('/roles/get', findRoles);
+
+UsersRoutes.get('/document-types/get', findDocumentTypes);
 
 
 export default UsersRoutes;

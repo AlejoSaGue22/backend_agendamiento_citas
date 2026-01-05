@@ -10,6 +10,11 @@ export interface User {
     email: string;
     contraseña: string;
     full_name: string;
+    name_users: string;
+    number_document: string;
+    type_document: string;
+    last_name: string;
+    role_id: number;
     role: Role;
     created_at: Date;
     is_active: boolean;
@@ -27,19 +32,31 @@ export interface UserPayload {
 }
 
 export interface StaffAvailability {
-    day_of_week: number;
+    day_of_week: string; // "Lunes"
     start_time: string; // "08:00"
     end_time: string;   // "17:00"
+    day_week_id: number;
+}
+
+export interface ServicePersonal {
+  id: number;
+  name: string;
+  duration: number; // en minutos
+  price: number;
+  selected: boolean;
+
 }
 
 export interface CreateUserDTO {
     email: string;
     password?: string;
-    names: string;
+    name_user: string;
     last_name: string;
-    full_name: string;
     role_id: number;
-        // Campos específicos para Staff
-    services?: number[]; // IDs de los servicios
+    number_document: string;
+    type_document: string;
+    phone: string;
+    // Campos específicos para Staff
+    services?: ServicePersonal[];
     availability?: StaffAvailability[];
 }

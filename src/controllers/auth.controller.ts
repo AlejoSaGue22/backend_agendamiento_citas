@@ -24,7 +24,7 @@ export const login = async (req: Request, res: Response) => {
             id: user.id, 
             fullName: user.full_name, 
             email: user.email, 
-            roleId: user.role
+            roleId: user.role_id
         },
         menu
     });

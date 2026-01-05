@@ -4,7 +4,7 @@ import { ServiceDto, Service } from "../interfaces/service.interfaces";
 export class ServiceRepository {
 
     async findAll(): Promise<ServiceDto[]> {
-        const sql = `SELECT * FROM services`;
+        const sql = `SELECT * FROM services ORDER BY id DESC`;
         const result = await query(sql);
         return result.rows || [];
     }
