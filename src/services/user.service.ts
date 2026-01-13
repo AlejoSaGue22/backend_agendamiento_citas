@@ -1,11 +1,11 @@
-import { CreateUserDTO, User } from "../interfaces/user.interfaces";
+import { CreateUserDTO, UpdateUserDTO, User } from "../interfaces/user.interfaces";
 import { UserRepository } from "../repositories/user.repository";
 
 const userRepo = new UserRepository();
 
 export class UserService {
 
-    private validateUsersData(data: CreateUserDTO) {
+    private validateUsersData(data: CreateUserDTO | UpdateUserDTO) {
             if (!data.name_user || data.name_user.trim() === '') {
                 throw new Error('El nombre es obligatorio.');
             }
@@ -42,11 +42,25 @@ export class UserService {
     async createUser(data: CreateUserDTO, createdBy: number) {
         this.validateUsersData(data); 
         const user = await userRepo.findByEmail(data.email);
+        
         if (user) {
             throw new Error('El correo electrónico ya está registrado.');
         }
 
         return await userRepo.createStaffComplete(data, createdBy);
+    }
+
+    async updateUser(id: number, data: UpdateUserDTO) {
+        this.validateUsersData(data); 
+        const user = await userRepo.findByIdWithPassword(id);
+        if(!user) throw new Error('El usuario no se encontro.');
+        
+        const password = data.password;
+        if (!password) {
+            data.password = user.contraseña;           
+        }
+        
+        return await userRepo.updateUser(id, data);
     }
 
     async deleteUser(id: number) {

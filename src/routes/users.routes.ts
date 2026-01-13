@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/auth.middleware";
-import { createUsers, deleteUser, findDocumentTypes, findRoles, getUserByID, getUsers } from "../controllers/user.controller";
+import { createUsers, deleteUser, findDocumentTypes, findRoles, getUserByID, getUsers, updateUser } from "../controllers/user.controller";
 
 const UsersRoutes = Router();
 
@@ -10,7 +10,7 @@ UsersRoutes.get('/:id', getUserByID);
 
 UsersRoutes.post('/', authenticate, createUsers);
 
-// UsersRoutes.patch('/:id', authenticate, );
+UsersRoutes.patch('/:id', authenticate, updateUser);
 
 UsersRoutes.delete('/:id', authenticate, deleteUser);
 

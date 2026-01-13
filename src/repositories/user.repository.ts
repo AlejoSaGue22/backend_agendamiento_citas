@@ -1,5 +1,5 @@
 import pool, { query } from '../config/db';
-import { User, Role, CreateUserDTO } from '../interfaces/user.interfaces';
+import { User, Role, CreateUserDTO, UpdateUserDTO } from '../interfaces/user.interfaces';
 
 export class UserRepository {
   
@@ -50,7 +50,7 @@ export class UserRepository {
 
   async findAll() {
         const sql = `
-            SELECT concat(u.name_user, ' ', u.last_name) as full_name, u.id, u.email, u.name_user, u.last_name, 
+            SELECT u.id, u.email, u.name_user, u.last_name, 
             u.role_id, r.name as role_name, u.number_document, u.type_document, u.phone, u.is_active, u.created_at
             FROM users u
             JOIN roles r ON u.role_id = r.id
@@ -63,9 +63,9 @@ export class UserRepository {
   async findById(id: number): Promise<User | null> {
     const sql = `SELECT u.id,
                         u.email,
-                        u.contraseña,
                         u.name_user,
                         u.last_name,
+                        concat(u.name_user, ' ', u.last_name) as full_name,
                         r.name AS role,
                         u.number_document,
                         u.type_document,
@@ -99,7 +99,19 @@ export class UserRepository {
                         ), '[]'::json) AS services
                     FROM users u
                     JOIN roles r ON r.id = u.role_id
-                    WHERE u.email = $1`;
+                    WHERE u.id = $1`;
+                 
+    const result = await query(sql, [id]);
+    return result.rows[0] || null;
+  }
+
+  async findByIdWithPassword(id: number): Promise<User | null> {
+    const sql = `SELECT u.id,
+                        u.email,
+                        u.is_active,
+                        u.contraseña
+                    FROM users u
+                    WHERE u.id = $1`;
                  
     const result = await query(sql, [id]);
     return result.rows[0] || null;
@@ -157,6 +169,25 @@ export class UserRepository {
             client.release();
         }
   }
+
+  async updateUser(id: number, data: UpdateUserDTO) {
+    const sql = `
+      UPDATE users
+      SET email = $2,
+          name_user = $3,
+          last_name = $4,
+          role_id = $5,
+          type_document = $6,
+          number_document = $7,
+          phone = $8,
+          contraseña = $9
+      WHERE id = $1
+      RETURNING id, email, name_user, last_name, role_id, type_document, number_document, phone
+    `;
+    const result = await query(sql, [id, data.email, data.name_user, data.last_name, data.role_id, data.type_document, data.number_document,
+                                     data.phone, data.password]);
+    return result.rows[0];
+  } 
 
   async deleteUser(id: number): Promise<boolean> {
       const sql = `DELETE FROM users WHERE id = $1`;

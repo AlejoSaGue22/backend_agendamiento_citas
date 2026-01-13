@@ -60,3 +60,17 @@ export interface CreateUserDTO {
     services?: ServicePersonal[];
     availability?: StaffAvailability[];
 }
+
+export interface UpdateUserDTO {
+    email?: string;
+    password?: string;
+    name_user?: string;
+    last_name?: string;
+    role_id?: number;
+    number_document?: string;
+    type_document?: string;
+    phone?: string;
+    // Campos específicos para Staff
+    services?: ServicePersonal[];
+    availability?: StaffAvailability[];
+}

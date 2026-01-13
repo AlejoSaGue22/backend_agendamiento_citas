@@ -50,6 +50,22 @@ export const createUsers = async (_req: AuthRequest, res: Response) => {
     }
 }
 
+export const updateUser = async (_req: AuthRequest, res: Response) => {
+    try {
+        const id = parseInt(_req.params.id);
+        if (isNaN(id)) return res.status(400).json({ message: 'ID de usuario inválido.' });
+
+        const data = _req.body;
+        const updateUser = await userService.updateUser(id, data);
+        res.json({
+            message: 'Usuario actualizado exitosamente',
+            user: updateUser
+        });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 export const deleteUser = async (_req: AuthRequest, res: Response) => {
     try {
         const id = parseInt(_req.params.id);
