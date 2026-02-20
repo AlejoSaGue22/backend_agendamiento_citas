@@ -6,6 +6,7 @@ export interface Service {
     created_by: string;
     description: string;
     status: boolean;
+    sedes?: { id: number, name: string }[];
 }
 
 export interface ServiceDto {
@@ -14,4 +15,5 @@ export interface ServiceDto {
     price: number;
     created_by: string;
     description: string;
+    sede_ids?: number[];
 }

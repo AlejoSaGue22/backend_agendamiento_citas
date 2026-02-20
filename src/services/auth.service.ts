@@ -45,10 +45,11 @@ export class AuthService {
         // if (!isMatch) {
         //     throw new Error('Credenciales inválidas.');
         // }
+
         if(user.contraseña !== credentials.password) throw new Error('Contraseña incorrecta');
         console.log("Usuario autenticado: ", user);
-        // 1. Generar payload y token
-        const payload: UserPayload = { id: user.id, role: user.role, email: user.email };
+        
+        const payload: UserPayload = { id: user.id, role: user.role_id, email: user.email, full_name: user.name_user, sede_id: user.sede_id };
         const token = jwt.sign(payload, envs.JWT_SECRET, { expiresIn: '8h' });
 
         // 2. Obtener menú dinámico
@@ -58,12 +59,18 @@ export class AuthService {
         return { token, user, menu };
     }
 
-    async checkAuthStatus(user: User): Promise<{userToken: User, token: string }> {
+    async checkAuthStatus(user: User): Promise<{userToken: {id: number, role: number, email: string, full_name: string, sede_id: number}, token: string }> {
         console.log("CheckStatus",user)
-        const token = jwt.sign({ id: user.id, rol: user.role_id, email: user.email }, envs.JWT_SECRET, { expiresIn: '8h' });
-      
+        const token = jwt.sign({ id: user.id, role: user.role, email: user.email, full_name: user.full_name, sede_id: user.sede_id }, envs.JWT_SECRET, { expiresIn: '8h' });
+        const userToken = {
+            id: user.id,
+            role: user.role,
+            email: user.email,
+            full_name: user.full_name,
+            sede_id: user.sede_id || 0
+        };
         return {
-            userToken: user,
+            userToken,
             token 
         };
     }

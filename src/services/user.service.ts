@@ -35,7 +35,7 @@ export class UserService {
         return await userRepo.findAll();
     }
 
-    async getUserBy(id: number) {
+    async getUserById(id: number) {
         return await userRepo.findById(id);
     }
 
@@ -61,6 +61,10 @@ export class UserService {
         }
         
         return await userRepo.updateUser(id, data);
+    }
+
+    async getStaffByService(serviceId: number, sedeId: number) {
+        return await userRepo.getStaffByService(serviceId, sedeId);
     }
 
     async deleteUser(id: number) {

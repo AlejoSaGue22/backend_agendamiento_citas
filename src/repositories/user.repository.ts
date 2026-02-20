@@ -15,6 +15,8 @@ export class UserRepository {
                         u.phone,
                         u.is_active,
                         r.id AS role_id,
+                        u.sede_id,
+                        se.name AS sede_name,
                         COALESCE((
                             SELECT json_agg(
                                 json_build_object(
@@ -42,6 +44,7 @@ export class UserRepository {
                         ), '[]'::json) AS services
                     FROM users u
                     JOIN roles r ON r.id = u.role_id
+                    LEFT JOIN sedes se ON se.id = u.sede_id
                     WHERE u.email = $1`;
     const result = await query(sql, [email]);
     
@@ -50,15 +53,21 @@ export class UserRepository {
 
   async findAll() {
         const sql = `
-            SELECT u.id, u.email, u.name_user, u.last_name, 
-            u.role_id, r.name as role_name, u.number_document, u.type_document, u.phone, u.is_active, u.created_at
+            SELECT DISTINCT u.id, u.email, u.name_user, u.last_name, 
+            u.role_id, r.name as role_name, u.number_document, u.type_document, u.phone, u.is_active, u.created_at,
+            u.sede_id, se.name as sede_name
             FROM users u
             JOIN roles r ON u.role_id = r.id
+            JOIN staff_services ss ON u.id = ss.staff_id
+            LEFT JOIN sedes se ON se.id = u.sede_id
+            WHERE u.is_active = true
             ORDER BY u.id DESC
         `;
         const result = await query(sql);
         return result.rows;
   }
+
+
 
   async findById(id: number): Promise<User | null> {
     const sql = `SELECT u.id,
@@ -72,6 +81,8 @@ export class UserRepository {
                         u.phone,
                         u.is_active,
                         r.id AS role_id,
+                        u.sede_id,
+                        se.name AS sede_name,
                         COALESCE((
                             SELECT json_agg(
                                 json_build_object(
@@ -99,6 +110,7 @@ export class UserRepository {
                         ), '[]'::json) AS services
                     FROM users u
                     JOIN roles r ON r.id = u.role_id
+                    LEFT JOIN sedes se ON se.id = u.sede_id
                     WHERE u.id = $1`;
                  
     const result = await query(sql, [id]);
@@ -134,10 +146,12 @@ export class UserRepository {
 
             // 1. Crear Usuario
             const userSql = `
-                INSERT INTO users (email, contraseña, name_user, last_name, role_id, type_document, number_document, phone)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id
+                INSERT INTO users (email, contraseña, name_user, last_name, role_id, type_document, number_document, phone, sede_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id
             `;
-            const userRes = await client.query(userSql, [data.email, data.password, data.name_user, data.last_name, data.role_id, data.type_document, data.number_document, data.phone]);
+            const userRes = await client.query(userSql, [data.email, data.password, data.name_user, data.last_name,
+                                                         data.role_id, data.type_document, data.number_document, data.phone,
+                                                         data.sede_id || null]);
             const userId = userRes.rows[0].id;
 
             // 2. Si es Staff, guardar servicios
@@ -180,12 +194,13 @@ export class UserRepository {
           type_document = $6,
           number_document = $7,
           phone = $8,
-          contraseña = $9
+          contraseña = $9,
+          sede_id = $10
       WHERE id = $1
-      RETURNING id, email, name_user, last_name, role_id, type_document, number_document, phone
+      RETURNING id, email, name_user, last_name, role_id, type_document, number_document, phone, sede_id
     `;
     const result = await query(sql, [id, data.email, data.name_user, data.last_name, data.role_id, data.type_document, data.number_document,
-                                     data.phone, data.password]);
+                                     data.phone, data.password, data.sede_id || null]);
     return result.rows[0];
   } 
 
@@ -193,6 +208,21 @@ export class UserRepository {
       const sql = `DELETE FROM users WHERE id = $1`;
       const result = await query(sql, [id]);
       return result.rowCount! > 0;
+  }
+
+  async getStaffByService(serviceId: number, sedeId: number) {
+    const sql = `
+      SELECT u.id, u.email, u.name_user, u.last_name, 
+      u.role_id, r.name as role_name, u.number_document, u.type_document, u.phone, u.is_active, u.created_at
+      FROM users u
+      JOIN roles r ON u.role_id = r.id
+      JOIN staff_services ss ON u.id = ss.staff_id
+      JOIN sedes s ON u.sede_id = s.id
+      WHERE ss.service_id = $1 AND u.is_active = true AND s.id = $2
+      ORDER BY u.id DESC
+    `;
+    const result = await query(sql, [serviceId, sedeId]);
+    return result.rows;
   }
 
   // Para la parte administrativa (menús)

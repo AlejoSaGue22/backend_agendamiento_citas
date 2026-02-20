@@ -10,12 +10,13 @@ export interface User {
     email: string;
     contraseña: string;
     full_name: string;
-    name_users: string;
+    name_user: string;
     number_document: string;
     type_document: string;
     last_name: string;
     role_id: number;
     role: Role;
+    sede_id?: number;
     created_at: Date;
     is_active: boolean;
 }
@@ -29,6 +30,8 @@ export interface UserPayload {
     id: number;
     role: Role;
     email: string;
+    full_name: string;
+    sede_id?: number;
 }
 
 export interface StaffAvailability {
@@ -56,6 +59,7 @@ export interface CreateUserDTO {
     number_document: string;
     type_document: string;
     phone: string;
+    sede_id?: number;
     // Campos específicos para Staff
     services?: ServicePersonal[];
     availability?: StaffAvailability[];
@@ -70,6 +74,7 @@ export interface UpdateUserDTO {
     number_document?: string;
     type_document?: string;
     phone?: string;
+    sede_id?: number;
     // Campos específicos para Staff
     services?: ServicePersonal[];
     availability?: StaffAvailability[];

@@ -39,6 +39,20 @@ export const getServiciosAll = async (req: AuthRequest, res: Response) => {
     }
 };
 
+export const getServiciosBySede = async (req: AuthRequest, res: Response) => {
+    try {
+        const sedeId = parseInt(req.params.sede_id);
+        if (isNaN(sedeId)) return res.status(400).json({ message: 'ID de sede inválido.' });
+        
+        const servicios = await serviceService.getServicesBySede(sedeId);
+        
+        res.json(servicios);
+        
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 export const updateService = async (req: AuthRequest, res: Response) => {
     try {
         const id = parseInt(req.params.id);

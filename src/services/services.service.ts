@@ -23,12 +23,16 @@ export class servicesService {
         return servicesRepo.findAll();
     }
 
+    async getServicesBySede(sedeId: number) {
+        return servicesRepo.findBySede(sedeId);
+    }
+
     async createService(data: ServiceDto, createdByUserId: number): Promise<Service> {
         this.validateServiceData(data);
         return servicesRepo.create(data, createdByUserId);
     }
 
-    async updateService(id: number, data: Service): Promise<Service> {
+    async updateService(id: number, data: ServiceDto): Promise<Service> {
         this.validateServiceData(data);
         const updatedService = await servicesRepo.update(id, data);
         if (!updatedService) {

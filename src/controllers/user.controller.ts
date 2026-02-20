@@ -25,7 +25,7 @@ export const getUserByID = async (_req: Request, res: Response) => {
         const id = parseInt(_req.params.id);
         if (isNaN(id)) res.status(400).json({ message: 'ID de usuario inválido.' });
 
-        const user = await userService.getUserBy(id);
+        const user = await userService.getUserById(id);
         res.json(user);
 
     } catch (error: any) {
@@ -75,6 +75,21 @@ export const deleteUser = async (_req: AuthRequest, res: Response) => {
         res.json({
             message: 'Usuario eliminado exitosamente'
         });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const getStaffByService = async (_req: Request, res: Response) => {
+    try {
+        console.log(_req.params);
+        const serviceId = parseInt(_req.params.service_id);
+        const sedeId = parseInt(_req.params.sede_id);
+        if (isNaN(serviceId)) return res.status(400).json({ message: 'ID de servicio inválido.' });
+        if (isNaN(sedeId)) return res.status(400).json({ message: 'ID de sede inválido.' });
+
+        const staff = await userService.getStaffByService(serviceId, sedeId);
+        res.json(staff);
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }

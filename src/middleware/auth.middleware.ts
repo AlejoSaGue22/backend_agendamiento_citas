@@ -2,15 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { envs } from '../config/envs';
 
-// Extender el tipo de Request para añadir información de usuario
 export interface AuthRequest extends Request {
   user?: { id: number; role: number };
 }
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1]; // Esperamos 'Bearer TOKEN'
+  const token = req.headers.authorization?.split(' ')[1];
 
-  if (!token) {
+  if (!token) { 
     return res.status(401).json({ message: 'Acceso denegado. No se proporcionó token.' });
   }
 
@@ -30,6 +29,8 @@ export const authorize = (allowedRoles: number[]) => {
         if (!req.user) {
             return res.status(403).json({ message: 'Falta información de usuario para autorización.' });
         }
+        // console.log("Usuario autorizado: ", req.user);
+        // console.log("Roles permitidos: ", allowedRoles);
         
         if (allowedRoles.includes(req.user.role)) {
             next(); // El rol está permitido

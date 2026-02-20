@@ -22,15 +22,15 @@ export const login = async (req: Request, res: Response) => {
         token, 
         user: { 
             id: user.id, 
-            fullName: user.full_name, 
+            full_name: user.name_user, 
             email: user.email, 
-            roleId: user.role_id
+            roleId: user.role_id,
+            sede_id: user.sede_id
         },
         menu
     });
     
   } catch (error: any) {
-    console.log("Error en controller: ",error);
     const status = error.message.includes('inválid') ? 401 : 500;
     res.status(status).json({ message: error.message });
   }
@@ -62,7 +62,6 @@ export const register = async (req: Request, res: Response) => {
 export const checkAuthStatus = async (req: RequestWihtUser, res: Response) => {
     try {
       const { userToken, token } = await authService.checkAuthStatus(req.user!);
-        console.log("Check Status USER TOKEN: ", userToken);
 
       res.json({
           user: userToken,
